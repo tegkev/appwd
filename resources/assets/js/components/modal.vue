@@ -19,20 +19,12 @@
 <script>
 
     export default{
-        data(){
-            return{
-                msg:'hello vue'
-            }
-        },
-        mounted(){
-
-        },
         methods:{
             open(){
                 $('#modal1').modal();
             },
             close(){
-                 $('#modal1').modal();
+                 $('#modal1').modal('close');
             }
         }
     }
