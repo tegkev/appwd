@@ -14,6 +14,9 @@ let router = new VueRouter({
     routes:[{
         path:'/test',
         component:require('./components/Example.vue')
+    },{
+        path:'/login',
+        component:require('./components/login.vue')
     }]
 });
 Vue.component('modal',require('./components/modal.vue'));
