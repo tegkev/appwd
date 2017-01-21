@@ -8560,4 +8560,14 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
   margin-top: 100px;
 }
 
+#content {
+  visibility: hidden;
+}
+
+#loading {
+  position: fixed;
+  top: 300px;
+  left: 650px;
+}
+
 /*# sourceMappingURL=app.css.map */

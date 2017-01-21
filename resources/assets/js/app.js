@@ -7,17 +7,18 @@
 
 require('./bootstrap');
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the body of the page. From here, you may begin adding components to
- * the application, or feel free to tweak this setup for your needs.
- */
-
-Vue.component('example', require('./components/Example.vue'));
-Vue.component('message',require('./components/message.vue'));
+import VueRouter from 'vue-router'
+Vue.use(VueRouter);
+let router = new VueRouter({
+    mode:"hash",
+    routes:[{
+        path:'/test',
+        component:require('./components/Example.vue')
+    }]
+});
 Vue.component('modal',require('./components/modal.vue'));
 Vue.component('formLogin',require('./components/login.vue'));
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',router
 });

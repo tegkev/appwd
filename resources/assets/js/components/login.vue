@@ -1,6 +1,6 @@
 <template>
     <div id="login-page" class="row">
-        <div class="col s3 z-depth-4 offset-s5 card-panel">
+        <div class="col s3 z-depth-4 offset-s5 card-panel" >
             <form class="login-form">
                 <div class="row">
                     <div class="input-field col s12 center"><img src="images/login-logo.png" alt=""
@@ -10,10 +10,10 @@
                 <div class="row margin">
                     <div class="input-field col {invalid:status} s12">
                         <i class="mdi-social-person-outline prefix"></i>
-                        <input id="username" type="text" v-model="name" @blur="controle">
+                        <input id="username" type="text" v-model="name" >
                         <label for="username" class="active">Username</label></div>
                 </div>
-                <a href="#">{{name}}</a>
+
                 <div class="row margin">
                     <div class="input-field col s12">
                         <i class="mdi-action-lock-outline prefix"></i>
@@ -28,7 +28,7 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                        <a href="index.html" class="btn waves-effect waves-ligh  col s12" @click.prevent="affiche">Login</a>
+                        <a href="index.html"  @click.prevent="addUser" class="btn waves-effect waves-ligh  col s12" >Login</a>
                     </div>
                 </div>
                 <div class="row">
@@ -47,22 +47,23 @@
     export default{
         data(){
             return{
-                name:"",
-                password:"",
+                name:"etffsdff",
+                password:"tfqsfest",
                 remember:false
             }
         },
         methods:{
-            affiche(){
-                alert('bonjour');
-            },
-            controle(){
-                    if(this.name.length <3){
-                        alert('champ mal rempli');
-                        status=true;
-                    }
+            addUser(){
+               /*= this.$http.post('/users',{
+                    name: this.name,
+                    password: this.password
+                }).then(response => console.log(response))*/
+                 this.$http.get('/users').then(response => console.log(response))
+                 .catch(response => console.log('erreur'));
             }
-        }
+
+        },
+
 
 
     }
