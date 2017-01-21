@@ -3,24 +3,48 @@ var router = express.Router();
 var Account= require('../models/AccountModel');
 var passport = require('passport');
 var User= require('../models/UserModel');
-hasAuth = require('connect-ensure-login').ensureLoggedIn();
-
-
 
 router.get('/login', (req, res) => {
     res.json({ user : req.user, error : req.flash('error')});
 });
 
+router.get('/session',(req,res)=>{
+    res.json(req.session);
+});
+router.post('/session',(req,res)=>{
+    req.session.test = req.body;
+    res.json(req.session);
+});
+router.get('/session/user',(req,res)=>{
 
-router.post('/login', passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }), (req, res, next) => {
-    req.session.save((err) => {
-        if (err) {
-            return next(err);
-        }
+    res.json(req.user);
+});
+router.post('/login', (req, res, next) => {
+
+    passport.authenticate('local')(req,res, () =>{
+        req.session.save((err) => {
+            if (err) {
+               // return next(err);
+                res.json({'err':err});
+            }
+            console.log(req.user);
+            res.json({
+                "status":true,
+                "user": req.user
+            });
+        });
+
     });
 });
 
-router.register('/')
+router.post('/users',function(req,res){
+     new User(req.body).save(function(err,data){
+        if(err){
+            return res.json({status:false,error:err.message})
+        }
+        res.json(data);
+    });
+});
 
 router.get('/logout', (req, res, next) => {
     req.logout();
@@ -31,29 +55,14 @@ router.get('/logout', (req, res, next) => {
     });
 });
 
-router.get('/users',function(req,res,next) {
-    console.log(req.session);
-    next()
-},function(req,res,next){
-    Account.find({},function (err,data) {
+router.get('/users',function(req,res,next){
+    User.find({},function (err,data) {
         if(err){
             res.json({"status":false});
         }
         res.json(data);
     });
 });
-router.post('/users',function(req,res,next){
-    /*let account = new Account({
-     username: req.params.username,
-     password : req.params.password
-     });*/
-        User.find({},function (err,data) {
-            if(err){
-                res.json({"status":false});
-            }
-            res.json(data);
-        });
 
-});
 
 module.exports = router;

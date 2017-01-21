@@ -4,9 +4,10 @@
   <title>{{ title }}</title>
   <link rel="stylesheet" href="css/materializecss-icon.css">
   <link rel='stylesheet' href='css/app.css' />
-</head>
 
-<body class="" >
+</head>
+{% block style %}{% endblock %}
+<body class="{{ class }}" >
 <div  id="loading" class="col l3 offset-l5">
   <div class="preloader-wrapper big active">
     <div class="spinner-layer spinner-blue">
@@ -23,11 +24,13 @@
   </div>
 </div>
   <div id="content">
-      <div id="app">
+      {% block body %}
+          <div id="app">
 
-          <router-view></router-view>
-        
-      </div>
+              <router-view></router-view>
+
+          </div>
+      {% endblock %}
   </div>
 </body>
 

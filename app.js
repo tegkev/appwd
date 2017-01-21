@@ -17,6 +17,9 @@ var api = require('./routes/api');
 
 var User= require('./models/UserModel');
 
+// a firewall to manage the role of my users
+var RoleMiddlewaire = require('./middleware/RoleMiddleware');
+
 
 var app = express();
 // view engine setup
@@ -28,6 +31,7 @@ app.set('view engine', 'twig');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use('/admin',RoleMiddlewaire.admin);
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
