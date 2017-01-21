@@ -49,22 +49,29 @@
             return{
                 name:"etffsdff",
                 password:"tfqsfest",
-                remember:false
+                remember:false,
+                users:[]
+
             }
         },
         methods:{
             addUser(){
-               /*= this.$http.post('/users',{
+              /* users= this.$http.post('/users',{
                     name: this.name,
                     password: this.password
                 }).then(response => console.log(response))*/
-                 this.$http.get('/users').then(response => console.log(response))
-                 .catch(response => console.log('erreur'));
+                 /*this.$http.get('/users').then(response => this.users=response.body)
+                 .catch(response => console.log('erreur'));*/
             }
 
         },
+      mounted(){
 
+         this.$http.get('/users').then((response) => {this.users=response.body})
+         .catch(response => console.log('erreur'));
 
+        }
 
     }
+
 </script>
