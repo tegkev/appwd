@@ -1,13 +1,15 @@
 var express = require('express');
 var router = express.Router();
+var User = require('../models/UserModel');
+
+var auth = function(req,res,next){
+    console(req.session.user);
+    next();
+}
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/',auth,function(req, res, next) {
 
-  return res.json({
-    nom: "teguia",
-    prenom: "kevin"
-  });
 });
 
 module.exports = router;

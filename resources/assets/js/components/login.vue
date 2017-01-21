@@ -47,8 +47,8 @@
     export default{
         data(){
             return{
-                name:"etffsdff",
-                password:"tfqsfest",
+                name:"",
+                password:"",
                 remember:false,
                 users:[]
 
@@ -56,10 +56,10 @@
         },
         methods:{
             addUser(){
-              /* users= this.$http.post('/users',{
-                    name: this.name,
+                users= this.$http.post('/register',{
+                    username: this.name,
                     password: this.password
-                }).then(response => console.log(response))*/
+                }).then(response => console.log(response))
                  /*this.$http.get('/users').then(response => this.users=response.body)
                  .catch(response => console.log('erreur'));*/
             }

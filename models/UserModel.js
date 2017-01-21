@@ -2,6 +2,9 @@ let mongoose = require('mongoose');
 let Schema= mongoose.Schema;
 let Account = require('./AccountModel');
 let UserSchema= new Schema({
+    'email':String,
+    'username':String,
+    'password':String,
     'nom':String,
     'prenom':String,
     'telephone':String,
@@ -10,8 +13,6 @@ let UserSchema= new Schema({
         'quartier':String,
         'secteur':String,
     },
-    'email':String,
-    'account':[{type:Number,ref:'Account'}],
     'imageUrl':String,
     'role':String
 
