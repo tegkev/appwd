@@ -6,7 +6,7 @@ DemandeSchema = new Schema({
     type:String,
     grosseur:String,
     quantite:Number,
-    _auteur:[{type:Number,ref:'User'}]
+    _auteur:[{type:String,ref:'User'}]
 });
 
 module.exports = mongoose.model('Demande',DemandeSchema);

@@ -8,7 +8,7 @@ CommandeSchema = new Schema({
         type:Schema.Types.ObjectId,
         ref:'Achat'
     }],
-    _auteur:[{type:Number,ref: 'User'}]
+    _auteur:[{type:String,ref: 'User'}]
 });
 CommandeSchema.methods.prixTotal= function prixTotal(){
     let prix;

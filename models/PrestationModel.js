@@ -24,7 +24,7 @@ let PrestationSchema = new Schema({
        type:Number,
         required:[true,"veuillez renseigner la duree"]
     },
-    "auteur":[{type:Number,ref:'User'}]
+    "auteur":[{type:String,ref:'User'}]
 });
 PrestationSchema.methods.coutPrestation=function coutPrestation(){
     return this.cout(1-(this.reduction*this.cout/100));

@@ -1,40 +1,42 @@
 class ModelHandler  {
 
-   getById(Model) {
+   getById(req,res,Model) {
         Model.findById(req.body._id, function (err, data) {
             if (err) {
                 res.json({status: false, error: err});
             }
-            res.json({status: true, offre: data})
+            res.json({status: true, data: data})
         });
     }
-   findAll(Model) {
+   findAll(req,res,Model) {
        Model.find({}, function (err, data) {
            if (err) {
                res.json({status: false, error: err});
            }
-           res.json({status: true, offre: data})
+           res.json({status: true, data: data})
        });
    }
-    save(Model) {
+    save(req,res,Model) {
+       console.log("id user est "+req.user._id);
        req.body._auteur=req.user._id;
         new Model(req.body).save(function (err, data) {
             if (err) {
                 res.json({status: false, error: err});
+            }else{
+                res.json({status: true, data: data})
             }
-            res.json({status: true, offre: data})
 
         });
     }
-    update(Model){
+    update(req,res,Model){
         Model.where({_id : req.param.id}).update(req.body, function (err, data) {
             if (err) {
                 res.json({status: false, error: err});
             }
-            res.json({status: true, offre: data})
+            res.json({status: true, data: data})
         });
     }
-    remove(Model){
+    remove(req,res,Model){
         Model.where({_id:req.param.id}).findOneAndRemove(function(err){
             if(err){
                 res.json({status:false});

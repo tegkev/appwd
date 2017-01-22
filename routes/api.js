@@ -9,6 +9,7 @@ var Demande = require('../models/DemandeModel');
 var Prestation = require('../models/PrestationModel');
 var roleHandler  = require('../middleware/RoleMiddleware');
 var modelHandler = require('../models/ModelHandler');
+var formidable = require('formidable');
 
 /****
  * gestion du login et des permissions
@@ -22,10 +23,9 @@ router.get('/user',roleHandler.user, (req, res) => {
 router.post('/user/authenticate', (req, res, next) => {
 
     passport.authenticate('local')(req,res, () =>{
+        console.log('erreur');
         req.session.save((err) => {
             if (err) {
-               // return next(err);
-                console.log('erreur');
                 res.json({'err':err});
             }
 
@@ -36,6 +36,7 @@ router.post('/user/authenticate', (req, res, next) => {
         });
 
     });
+    // return next(err);
 });
 
 router.post('/users',(req, res) => {
@@ -43,6 +44,7 @@ router.post('/users',(req, res) => {
         user.role.push('ADMIN');
     user.save(function(err,data){
         if(err){
+            console.log(user);
             return res.json({status:false,error:err})
         }
         res.json(data);
@@ -75,38 +77,38 @@ router.get('/logout',roleHandler.user,(req, res, next) => {
  * gestion de la ressource offre
  */
 router.get('/offres',roleHandler.user,(req, res) => {
-        modelHandler.findAll(Offre);
+        modelHandler.findAll(req,res,Offre);
 });
 router.get('/offres/:id',roleHandler.user,(req, res) => {
-    modelHandler.getById(Offre);
+    modelHandler.getById(req,res,Offre);
 });
-router.post('admin/offres',(req, res) => {
-    modelHandler.save(Offre);
+router.post('/admin/offres',(req, res) => {
+    modelHandler.save(req,res,Offre);
 });
-router.put('admin/offres/:id',(req, res) => {
-    modelHandler.update(Offre);
+router.put('/admin/offres/:id',(req, res) => {
+    modelHandler.update(req,res,Offre);
 });
-router.delete('admin/offres/:id',(req, res) => {
-    modelHandler.remove(Offre);
+router.delete('/admin/offres/:id',(req, res) => {
+    modelHandler.remove(req,res,Offre);
 });
 /***
  *
  * gestion des prestations
  */
 router.get('/prestations',roleHandler.user,(req, res) => {
-    modelHandler.findAll(Prestation);
+    modelHandler.findAll(req,res,Prestation);
 });
 router.get('/prestations/:id',roleHandler.user,(req, res) => {
-    modelHandler.getById(Prestation);
+    modelHandler.getById(req,res,Prestation);
 });
-router.post('admin/prestations',(req, res) => {
-    modelHandler.save(Prestation);
+router.post('/admin/prestations',(req, res) => {
+    modelHandler.save(req,res,Prestation);
 });
-router.put('admin/prestations/:id',(req, res) => {
-    modelHandler.update(Prestation);
+router.put('/admin/prestations/:id',(req, res) => {
+    modelHandler.update(req,res,Prestation);
 });
-router.delete('admin/prestations/:id',(req, res) => {
-    modelHandler.remove(Prestation);
+router.delete('/admin/prestations/:id',(req, res) => {
+    modelHandler.remove(req,res,Prestation);
 });
 
 /***
@@ -114,21 +116,21 @@ router.delete('admin/prestations/:id',(req, res) => {
  * gestionnaire de route demandes
  */
 router.get('/demandes',roleHandler.user,(req, res) => {
-    modelHandler.findAll(Demande);
+    modelHandler.findAll(req,res,Demande);
 });
 router.get('/demandes/:id',roleHandler.user,(req, res) => {
-    modelHandler.getById(Demande);
+    modelHandler.getById(req,res,Demande);
 
 });
 router.post('/demandes',roleHandler.user,(req, res) => {
-    modelHandler.save(Demande);
+    modelHandler.save(req,res,Demande);
 
 });
 router.put('/demandes/:id',roleHandler.user,(req, res) => {
-    modelHandler.update(Demande);
+    modelHandler.update(req,res,Demande);
 });
 router.delete('/demandes/:id',roleHandler.user,(req, res) => {
-    modelHandler.remove(Demande);
+    modelHandler.remove(req,res,Demande);
 });
 
 /***
@@ -136,10 +138,16 @@ router.delete('/demandes/:id',roleHandler.user,(req, res) => {
  * commandes
  */
 router.get('/commande',roleHandler.user,(req, res) => {
-    modelHandler.findAll(Commande);
+    Commande.find({}).populate({
+        path:'achats',
+        populate:{path:'offre prestation'}
+    }).exec((err,commande)=>{
+        if(err) res.json({status:false,erreur:err});
+        res.json(commande);
+    } );
 });
 router.get('/commande/:id',roleHandler.user,(req, res) => {
-    modelHandler.getById(Commande);
+    modelHandler.getById(req,res,Commande);
 
 });
 router.post('/commande',roleHandler.user,(req, res) => {
@@ -148,18 +156,27 @@ router.post('/commande',roleHandler.user,(req, res) => {
         if(err){
             res.json({status:false,erreur:err});
         }
-        if(req.session.hasOwnProperty('achats')){
+        if(req.session.achats){
+            let nbre = req.session.achats.length;
+            console.log(nbre);
             for (var i = 0; i < req.session.achats.length; i++) {
                 var obj = req.session.achats[i];
                 obj._commande=commande._id;
-                odj.save(function(err){
+                let achat =new Achat(obj);
+                achat.save(function(err){
                     if(err){
                         res.json({status:false,erreur:err});
                     }
-                })
+                });
             }
+            commande.update(function(err){
+                if(err) res.json({status:false,erreur:err});
+            });
+            res.json({status:true,data:commande});
+        }else{
+            res.json({status:false,message:"aucun achat a été fait"});
         }
-        res.json({status:true});
+
     });
 
 });
@@ -185,17 +202,36 @@ router.get('/achat/:id',roleHandler.user,(req, res) => {
     }).populate('_prestation');
 });
 router.post('/achat',roleHandler.user,(req, res) => {
-        modelHandler.save(Achat)
+        modelHandler.save(req,res,Achat)
 });
 router.put('/achat/:id',roleHandler.user,(req, res) => {
-    modelHandler.update(Achat);
+    modelHandler.update(req,res,Achat);
 });
 router.delete('/achat/:id',roleHandler.user,(req, res) => {
-    modelHandler.remove(Achat);
+    modelHandler.remove(req,res,Achat);
 });
-router.post('/session/achat',(req, res) => {
+router.post('/session/achat',roleHandler.user,(req, res) => {
+    if(!req.session.achats){
+        req.session.achats=[];
+    }
     achat = new Achat(req.body);
     req.session.achats.push(achat);
+    res.json({status:true,message:"add to session"});
+});
+
+
+
+var form = require('formidable');
+/* GET home page. */
+
+
+router.post('/upload', function (req, res, next) {
+    var form = new formidable.IncomingForm();
+    form.uploadDir="./uploads";
+
+    form.parse(req,function(err,fiels,file){
+        console.log(fiels,file);
+    });
 });
 
 module.exports = router;
