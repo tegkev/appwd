@@ -39,7 +39,10 @@ UserSchema = new Schema({
         'quartier': String,
         'secteur': String,
     },
-    'imageUrl': String,
+    'image': {
+        path:String,
+        name:String,
+    },
     'role': {
         type:Array,
         default:['USER']
@@ -65,7 +68,7 @@ UserSchema.methods.getUser = function getUser(){
         prenom:this.prenom,
         telephone:this.telephone,
         addresse:this.addresse,
-        imageUrl:this.imageUrl,
+        image:this.image,
         role:this.role,
         dateCreate:this.dateCreate
     }

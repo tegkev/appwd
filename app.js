@@ -8,7 +8,6 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 var mongoose = require('mongoose');
-var formidable = require('express-formidable');
 
 
 mongoose.connect('mongodb://localhost::27017/nodejs');

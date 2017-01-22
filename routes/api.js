@@ -10,6 +10,8 @@ var Prestation = require('../models/PrestationModel');
 var roleHandler  = require('../middleware/RoleMiddleware');
 var modelHandler = require('../models/ModelHandler');
 var formidable = require('formidable');
+let passwordHash =require('password-hash');
+
 
 /****
  * gestion du login et des permissions
@@ -40,14 +42,57 @@ router.post('/user/authenticate', (req, res, next) => {
 });
 
 router.post('/users',(req, res) => {
-    let user = new User(req.body);
-        user.role.push('ADMIN');
-    user.save(function(err,data){
-        if(err){
-            console.log(user);
-            return res.json({status:false,error:err})
-        }
-        res.json(data);
+    var form = formidable.IncomingForm();
+    form.uploadDir="./uploads";
+    form.parse(req,function(err,fields,file){
+        if(err) res.json({status:false});
+
+        user = new User(fields);
+        user.image= {path:file.image.path,name:file.image.name};
+        //console.log(user.image);
+        user.save(function(err,data){
+            if(err){
+                console.log(user);
+                return res.json({status:false,error:err})
+            }
+            req.body=fields;
+            console.log("req.body",fields);
+            passport.authenticate('local')(req,res, () =>{
+                console.log('erreur');
+                req.session.save((err) => {
+                    if (err) {
+                        res.json({'err':err});
+                    }
+
+                    res.json({
+                        "status":true,
+                        "user": req.user.getUser()
+                    });
+                });
+
+            });
+
+        });
+    });
+});
+router.put('/users',roleHandler.user,function(req,res){
+    var form = formidable.IncomingForm();
+    form.uploadDir="./uploads";
+    user = req.user;
+    form.parse(req,function(err,fields,file){
+        if(err) res.json({status:false});
+
+
+        user.image= {path:file.image.path,name:file.image.name};
+        var valeurSale=value(fields);
+        //console.log(user.image);
+        user.update({$set:valeurSale},function(err,data){
+            if(err){
+                console.log(user);
+                return res.json({status:false,error:err})
+            }
+            res.json(data);
+        });
     });
 });
 router.get('/users',roleHandler.admin,(req, res) => {
@@ -229,9 +274,21 @@ router.post('/upload', function (req, res, next) {
     var form = new formidable.IncomingForm();
     form.uploadDir="./uploads";
 
-    form.parse(req,function(err,fiels,file){
-        console.log(fiels,file);
+    form.parse(req,function(err,fields,file){
+        console.log(fields,file);
     });
 });
-
+function value(fields){
+    valeur={};
+    for (var property in ['email','nom','prenom','addresse','telephone']) {
+        if(fields.hasOwnProperty(property)){
+            valeur.property=fields.property;
+        }
+    }
+    if(fields.password){
+        valeur.password=passwordHash.generate(fields.password);
+    }
+    console.log("put",valeur);
+    return valeur;
+}
 module.exports = router;
