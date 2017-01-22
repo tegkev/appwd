@@ -16,11 +16,11 @@ let router = new VueRouter({
         component:require('./components/Example.vue')
     },{
         path:'/login',
-        component:require('./components/login.vue')
+        component:require('./pages/login.vue')
     }]
 });
 Vue.component('modal',require('./components/modal.vue'));
-Vue.component('formLogin',require('./components/login.vue'));
+Vue.component('formLogin',require('./pages/login.vue'));
 
 const app = new Vue({
     el: '#app',router

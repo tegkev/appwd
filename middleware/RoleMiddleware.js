@@ -1,16 +1,21 @@
 class Role{
-    admin(req,res){
-        console.log('ça marche');
-        if(!req.hasOwnProperty('user') || !req.user.loginHas('ADIMIN')){
+    admin(req,res,next) {
+        if (!req.hasOwnProperty('user') || !req.user.loginHas('ADMIN')) {
+                res.json({status: 404, message: "page Introuvable, vérifier le lien SVP"}).status(404);
+            }else {
+                next();
+            }
 
-            res.status(404).render('error',{status:404,message:"page Introuvable, vérifier le lien SVP"});
-        }
     }
-    user(req,res){
-        if(!req.hasOwnProperty('user') || !req.user.loginHas('USER')){
-            req.json({status:false,message:"non inscrit"})
-        }
+
+    user(req,res,next) {
+            if (!req.hasOwnProperty('user')||!req.user.loginHas('USER')) {
+                res.json({status: false, message: "veuillez vous connectez"});
+            }else{
+                next();
+            }
     }
+
 }
 
 

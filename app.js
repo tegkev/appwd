@@ -31,7 +31,8 @@ app.set('view engine', 'twig');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/admin',RoleMiddlewaire.admin);
+app.use('/admin/',RoleMiddlewaire.admin);
+app.use('/api/*',RoleMiddlewaire.user);
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -65,11 +66,15 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+    next(err);
 });
 passport.use(new LocalStrategy(
-    function(username, password, done) {
-        User.findOne({ username: username }, function(err, user) {
+    {
+        usernameField: 'email',
+        passwordField: 'password'
+    },
+    function(email, password, done) {
+        User.findOne({ email: email }, function(err, user) {
             if (err) { return done(err); }
             if (!user) {
                 return done(null, false, { message: 'Incorrect username.' });
