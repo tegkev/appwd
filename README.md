@@ -1,9 +1,9 @@
 # appwd
 
-a template of an  vue+nodejs+mongoose+twig to begin
+A template of an  vue+nodejs+mongoose+twig to begin you project
 
 INSTALLATION
 
-run npm install teg-danger/appwd
-
-then install all the package by type npm install
+- Clone this repository 
+- Then install all the package by type npm install
+- Enjoy
